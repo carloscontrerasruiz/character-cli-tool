@@ -11,3 +11,5 @@
 - cobra-cli add pokemon
 
 - cobra-cli add rick
+
+- go install github.com/carloscontrerasruiz/character
