@@ -10,16 +10,19 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var pokemonName string
+var verboseMode bool
 
 // pokemonCmd represents the pokemon command
 var PokemonCmd = &cobra.Command{
 	Use:   "pokemon",
 	Short: "Find your pokemon",
-	Long: `Find your pokemon`,
+	Long:  `Find your pokemon`,
 	Run: func(cmd *cobra.Command, args []string) {
+		verboseMode, _ = cmd.Flags().GetBool("verbose")
 		callPokemonApi()
 	},
 }
@@ -29,15 +32,18 @@ func init() {
 	PokemonCmd.MarkFlagRequired("name")
 }
 
-func callPokemonApi(){
-	url := "https://pokeapi.co/api/v2/pokemon/" + pokemonName
-	res, err := http.Get(url)
-	if err != nil {
-		fmt.Printf("error making http request: %s\n", err.Error())
-		os.Exit(1)
+func callPokemonApi() {
+
+	if verboseMode {
+		fmt.Println(viper.GetString("verboseSpeech"))
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 
-	if res.StatusCode >= 300{
+	url := "https://pokeapi.co/api/v2/pokemon/" + pokemonName
+	res, err := http.Get(url)
+	cobra.CheckErr(err)
+
+	if res.StatusCode >= 300 {
 		fmt.Printf("client: status code: %d\n", res.StatusCode)
 		os.Exit(1)
 	}
